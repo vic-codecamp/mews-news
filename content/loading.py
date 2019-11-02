@@ -4,14 +4,8 @@ import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
-
-
-df = pd.read_csv('history.csv')
-
-features = pd.DataFrame(df, columns=['title',"action"])
-
-
-
+from sklearn.pipeline import Pipeline
+from joblib import dump, load
 
 
 class NewsTittles:
@@ -19,7 +13,10 @@ class NewsTittles:
     labels = [0, 1, 2]
     label_cat = ["down", "netruaal", "up"]
 
-    def load(self,data):
+
+    def load_csv(self):
+        df = pd.read_csv('history.csv')
+        data = pd.DataFrame(df, columns=['title', "action"])
 
         documents =[]
         learn_targets = []
@@ -28,36 +25,27 @@ class NewsTittles:
         for index, row in data.iterrows():
             documents.append(row['title'])
             learn_targets.append(row["action"])
+        return documents, learn_targets
 
-        # count vectorizer of the documents
-        count_vect = CountVectorizer()
-        X_train_counts = count_vect.fit_transform(documents)
-        # print(X_train_counts)
+    def train(self):
+        documents, learn_targets = self.load_csv()
 
-        # Term Freq
-        tf_transformer = TfidfTransformer(use_idf=False).fit(X_train_counts)
-        X_train_tf = tf_transformer.transform(X_train_counts)
-        # print(X_train_tf.shape)
+        text_clf = Pipeline([
+            ('vect', CountVectorizer()),
+            ('tfidf', TfidfTransformer()),
+            ('clf', MultinomialNB()),
+        ])
 
+        # fit pipeline
+        clf = text_clf.fit(documents, learn_targets)
 
-        # Term Frequency times Inverse Document Frequency
-        tfidf_transformer = TfidfTransformer()
-        X_train_tfidf = tfidf_transformer.fit_transform(X_train_counts)
-        # print(X_train_tfidf)
+        # persist trained pipeline
+        dump(clf, 'classifier.joblib')
 
+    def classify(self, titles):
+        clf = load('classifier.joblib')
 
-
-        clf = MultinomialNB().fit(X_train_tfidf, learn_targets)
-
-
-        docs_new = [
-            'Bitcoin’s Defense of Major Support May Fuel Price Bounce to $9,600',
-        ]
-
-        X_new_counts = count_vect.transform(docs_new)
-        X_new_tfidf = tfidf_transformer.transform(X_new_counts)
-
-        predicted = clf.predict(X_new_tfidf)
+        predicted = clf.predict(titles)
 
         for doc, category in zip(docs_new, predicted):
             print('%r => %s' % (doc, self.label_cat[category]))
@@ -66,7 +54,12 @@ class NewsTittles:
 
 
 a = NewsTittles()
-a.load(features)
+a.train()
+
+docs_new = [
+    'Bitcoin’s Defense of Major Support May Fuel Price Bounce to $8,600',
+]
+a.classify(docs_new)
 
 # a.print()
 

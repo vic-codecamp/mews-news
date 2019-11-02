@@ -65,8 +65,6 @@ const findAsync = function(db, params = {}, sortObj = {}, skip = null, limit = n
         findObj = findObj.limit(limit);
       }
 
-      console.log(findObj);
-
       findObj.exec(function(err, docFound) {
         if (err) {
           reject(err);

@@ -2,7 +2,9 @@
   <div class="container">
     <div class="columns">
       <div class="column">
-        <p><i class="fab fa-github fa-fw fa-2x"></i></p>
+        <p>
+          <a href="https://github.com/vic-codecamp/mews-news"><i class="fab fa-github fa-fw fa-2x"></i></a>
+        </p>
         <p>Powered by <a href="https://newsapi.org">newsapi.org</a>.</p>
         <p>Last updated: {{ lastUpdated }}</p>
       </div>

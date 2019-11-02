@@ -119,14 +119,9 @@ class MewsHttpServer {
           req.flash("error", "");
         }
 
-        const newsItems = await db.newsItemsGetLatest();
-        for (const newsItem of newsItems) {
-          newsItem.publishedAtSince = moment(newsItem.publishedAt).fromNow();
-        }
+        req.renderData.newsItems = await getLatestNewsItems(db);
 
-        req.renderData.newsItems = newsItems;
-
-        console.log(req.renderData);
+        console.log(getLoggableRenderData(req.renderData));
         res.render("index", { ...req.renderData });
       })
     );
@@ -139,34 +134,13 @@ class MewsHttpServer {
       middlewareSetMimeTypeTextHtml,
       // middlewareStats,
       wrap(async function(req, res) {
-        /*
-        let linkObj = {
-          link: req.body.link,
-          userId: req.renderData.username,
-          when: moment().unix()
-        };
+        console.log(req.body);
 
-        if (linkObj.userId) {
-          const { error } = linkSchema.validate(linkObj);
-          if (error) {
-            req.renderData.notification = { message: error.message, type: "error" };
-          } else {
-            linkObj = await shortenLink(ic, db, linkObj);
-            req.renderData.notification = { message: "Successfully shortened link: " + linkObj.link, type: "success" };
-          }
-        } else {
-          req.renderData.notification = { message: "Need to be logged in to perform this action!", type: "error" };
-        }
-        */
+        // TODO: save user action
 
-        /*
-        if (!req.renderData.notification) {
-         
-        }
-        */
-        // req.renderData = Object.assign(req.renderData, linkObj);
+        req.renderData.newsItems = await getLatestNewsItems(db);
 
-        console.log(req.renderData);
+        console.log(getLoggableRenderData(req.renderData));
         res.render("index", { ...req.renderData });
       })
     );
@@ -251,5 +225,17 @@ const getStats = async function(db) {
   };
 };
 */
+
+const getLatestNewsItems = async function(db) {
+  const newsItems = await db.newsItemsGetLatest();
+  for (const newsItem of newsItems) {
+    newsItem.publishedAtSince = moment(newsItem.publishedAt).fromNow();
+  }
+  return newsItems;
+};
+
+const getLoggableRenderData = function(renderData) {
+  return { ...renderData, newsItemsCount: renderData.newsItems ? renderData.newsItems.length : -1, newsItems: null };
+};
 
 module.exports = MewsHttpServer;

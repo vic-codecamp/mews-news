@@ -1,15 +1,34 @@
 <div class="columns is-mobile">
+  <form id="form-{{ _id }}-up-vote" method="post" action="/">
+    <input type="hidden" name="vote" value="2" />
+    <input type="hidden" name="newsItemId" value="{{ _id }}" />
+  </form>
+  <form id="form-{{ _id }}-down-vote" method="post" action="/">
+    <input type="hidden" name="vote" value="0" />
+    <input type="hidden" name="newsItemId" value="{{ _id }}" />
+  </form>
+
   <div class="column is-6-desktop is-offset-3-desktop is-8-tablet is-offset-2-tablet">
     <div class="card">
       {{#username}}
       <header class="card-header">
-        <a href="#" class="card-header-icon" aria-label="upvote">
+        <a
+          href="#"
+          class="card-header-icon"
+          aria-label="upvote"
+          onClick="document.getElementById('form-{{ _id }}-up-vote').submit();"
+        >
           <span class="icon">
             <i class="far fa-thumbs-up" aria-hidden="true"></i>
           </span>
         </a>
         <p class="card-header-title"><!-- {{ publishedAt }} --></p>
-        <a href="#" class="card-header-icon" aria-label="downvote">
+        <a
+          href="#"
+          class="card-header-icon"
+          aria-label="downvote"
+          onClick="document.getElementById('form-{{ _id }}-down-vote').submit();"
+        >
           <span class="icon">
             <i class="far fa-thumbs-down" aria-hidden="true"></i>
           </span>

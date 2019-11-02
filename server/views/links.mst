@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  {{> partials/head}}
+
+  <body>
+    <div id="main-content-container">
+      {{> partials/navbar}}
+      <div id="main-content">
+        <section class="section">
+          <div class="container`">
+            <div class="columns">
+              <div class="column is-8-desktop is-offset-2-desktop">
+                boo
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+      <!-- end main-content-container -->
+      {{> partials/footer}}
+    </div>
+  </body>
+</html>

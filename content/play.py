@@ -48,12 +48,11 @@ class NewsTittleClassifier:
         self.clf.fit(X_train_tfidf, self.learn_targets)
 
     def vote(self,s,v):
-
         X_train_counts = self.count_vect.transform([s])
-
         X_train_tfidf = self.tfidf_transformer.transform(X_train_counts)
-
         self.clf.partial_fit(X_train_tfidf,[v])
+
+        return True
 
     def classify_single(self, title):
         a = self.classify([title])

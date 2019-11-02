@@ -25,24 +25,21 @@ def index():
     return 'ML service'
 
 # curl -d '{"username":"user", "title":"my title","vote":"0"}' -H "Content-Type: application/json" -X POST http://localhost:7070/api/vote
-#
-#  NOT USED AT THE MOMENT
-#
-# @app.route('/api/vote', methods=[ 'POST'])
-# def add_vote():
-#
-#     data = request.get_json()
-#
-#     user = data["username"]
-#     title = data["title"]
-#     vote = data["vote"]
-#
-#     ml = MockMl()
-#
-#     if ml.vote(user, title, vote):
-#         return "ok"
-#     else:
-#         return "error voting"
+
+@app.route('/api/vote', methods=[ 'POST'])
+def add_vote():
+
+    data = request.get_json()
+
+    user = data["username"]
+    title = data["title"]
+    vote = data["vote"]
+
+    ntc = SingleNewsTittleClassifier()
+    if ntc.vote(user,title,vote):
+        return "ok"
+    else:
+        return "error voting"
 
 # curl -d '[{"username":"user", "title":"my title","id":1},{"username":"user", "title":"BITCOIN EXPLOSIVE MOVE SOON!?! FLASH CRASH & BitMEX Email LEAK! Bullish News!!","id":2}]' -H "Content-Type: application/json" -X POST http://localhost:7070/api/votes
 @app.route('/api/votes', methods=[ 'POST'])
@@ -66,7 +63,7 @@ if __name__ == '__main__':
 
     print("Starting the News Clasifier")
     ml = SingleNewsTittleClassifier()
-    ml.reload_model()
+    ml.load()
 
 
     app.run(debug=True, host='0.0.0.0', port=7070)

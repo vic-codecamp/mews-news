@@ -13,6 +13,8 @@ module.exports = function(ic) {
 
   return {
     init: function() {
+
+      /*
       dbLinks = createDatastore("links");
 
       dbClicks = createDatastore("clicks");
@@ -20,6 +22,7 @@ module.exports = function(ic) {
       return ensureIndexAsync(dbLinks, { fieldName: "shortLink", unique: true }).then(() => {
         return ensureIndexAsync(dbClicks, { fieldName: "shortLink" });
       });
+      */
       /*
         .then(() => {
           return ensureIndexAsync(dbClicks, { fieldName: "userId" });

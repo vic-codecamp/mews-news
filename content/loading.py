@@ -1,9 +1,7 @@
 #!/usr/bin/python3
 
-import requests
+import pandas as pd
 
-url = ('https://newsapi.org/v2/top-headlines?'
-       'country=us&'
-       'apiKey=aeba79676d064e08a9c687c0d988115f')
-response = requests.get(url)
-print(response.json())
+df = pd.read_csv('history.csv')
+
+print(df)

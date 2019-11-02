@@ -4,4 +4,5 @@ import pandas as pd
 
 df = pd.read_csv('history.csv')
 
-print(df)
+features = pd.DataFrame(df, columns=['title'])
+print(features)

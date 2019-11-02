@@ -8,6 +8,7 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 const flash = require("connect-flash");
 const path = require("path");
+const asyncHandler = require("express-async-handler");
 
 const { middlewareSetMimeTypeTextHtml } = require("./middleware");
 const auth = require("./auth");
@@ -17,25 +18,16 @@ const linkSchema = require("../schemas/link");
 const { generateShortLink } = require("../util/link-util");
 */
 
-const wrap = fn => {
-  return async function(req, res, next) {
-    let e = null;
-    try {
-      await fn(req, res, next);
-    } catch (err) {
-      e = err;
-      next(err);
-    }
-
-    if (!e) {
-      next();
-    }
+const wrap = fn =>
+  function asyncUtilWrap(...args) {
+    const fnReturn = fn(...args);
+    const next = args[args.length - 1];
+    return Promise.resolve(fnReturn).catch(next);
   };
-};
 
 class MewsHttpServer {
   constructor(ic, db) {
-    ic.logger.info("Shorty server running in " + ic.env);
+    ic.logger.info("Mews server running in " + ic.env);
 
     const lastUpdated = moment.unix(ic.lastUpdated).fromNow();
 
@@ -137,6 +129,9 @@ class MewsHttpServer {
         console.log(req.body);
 
         // TODO: save user action
+
+        // TODO: cycle through funny messages as an easter egg
+        req.renderData.notification = { message: "Every vote counts!", type: "success" };
 
         req.renderData.newsItems = await getLatestNewsItems(db);
 

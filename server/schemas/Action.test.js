@@ -9,7 +9,7 @@ describe("ActionSchema", function() {
     const { error, value } = ActionSchema.validate({});
 
     // then
-    expect(error.message).to.equal('"username" is required');
+    expect(error.message).to.equal('"userId" is required');
     expect(error.name).to.equal("ValidationError");
   });
 

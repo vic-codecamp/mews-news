@@ -3,7 +3,7 @@ const Chance = require("chance");
 const moment = require("moment");
 
 const configuration = require("../config");
-const ShortyHttpServer = require("../routes/MewsHttpServer");
+const MewsHttpServer = require("../routes/MewsHttpServer");
 const DbNeDB = require("../db/DbNeDB");
 
 const chance = new Chance();
@@ -18,7 +18,7 @@ const routeTestSetup = async function() {
   const ic = await configuration.init();
   const db = new DbNeDB(ic);
   await db.init();
-  const httpServer = new ShortyHttpServer(ic, db);
+  const httpServer = new MewsHttpServer(ic, db);
   const server = httpServer.listen(9001);
   const url = "http://localhost:9001";
   const request = supertest(url);
@@ -26,9 +26,8 @@ const routeTestSetup = async function() {
 };
 
 const routeTestTeardown = async function(server, db) {
-  return cleanUpDb(db).then(() => {
-    return server.close();
-  });
+  await cleanUpDb(db);
+  server.close();
 };
 
 const login = function(ic, request) {
@@ -38,9 +37,9 @@ const login = function(ic, request) {
     .send({ username: ic.appUsername, password: ic.appPassword });
 };
 
-const getRandomActionObj = function({ username, url, title, action }) {
+const getRandomActionObj = function({ userId, url, title, action }) {
   return {
-    username: username || chance.guid(),
+    userId: userId || chance.guid(),
     url: url || chance.url({}),
     title: title || chance.sentence({}),
     action: action || chance.natural({ min: 0, max: 2 }),
@@ -50,12 +49,7 @@ const getRandomActionObj = function({ username, url, title, action }) {
 };
 
 const cleanUpDb = async function(db) {
-  /*
-  const numLinksRemoved = await db.linkRemoveTestLinks();
-  // console.log("numLinksRemoved", numLinksRemoved);
-  const numClicksRemoved = await db.clickRemoveTestClicks();
-  // console.log("numClicksRemoved", numClicksRemoved);
-  */
+  const numActionsRemoved = await db.actionRemoveTestActions();
 };
 
 module.exports = {

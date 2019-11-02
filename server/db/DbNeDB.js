@@ -43,7 +43,15 @@ module.exports = function(ic) {
 
     newsItemsGetLatest: function(skip = 0, limit = 100) {
       return findAsync(dbNews, {}, { publishedAt: -1 }, skip, limit);
-    }
+    },
+
+    actionAdd: function(actionObj) {
+      return insertAsync(dbActions, actionObj);
+    },
+
+    actionGetByUserId: function(actionObj) {
+      return insertAsync(dbActions, actionObj);
+    },
 
     /*
     linkRemoveTestLinks: function() {
@@ -65,10 +73,10 @@ module.exports = function(ic) {
     clickCount: function() {
       return countAsync(dbClicks, {});
     },
-
-    clickRemoveTestClicks: function() {
-      return removeAsync(dbClicks, { test: { $exists: "true" } });
-    }
     */
+
+    actionRemoveTestActions: function() {
+      return removeAsync(dbActions, { test: { $exists: "true" } });
+    }
   };
 };

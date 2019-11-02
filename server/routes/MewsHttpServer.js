@@ -17,7 +17,6 @@ const linkSchema = require("../schemas/link");
 const { generateShortLink } = require("../util/link-util");
 */
 
-
 const wrap = fn => {
   return async function(req, res, next) {
     let e = null;
@@ -109,21 +108,32 @@ class MewsHttpServer {
     // get the main page
     // in case there was a login attempt, display a notification (due to redirection)
     //
-    server.get("/", middlewareSetMimeTypeTextHtml, /* middlewareStats,*/ function(req, res) {
-      const errorMessage = req.flash("error")[0];
-      if (errorMessage) {
-        req.renderData.notification = { message: errorMessage, type: "error" };
-      } else {
-        req.flash("error", "");
-      }
+    server.get(
+      "/",
+      middlewareSetMimeTypeTextHtml,
+      /* middlewareStats,*/ wrap(async function(req, res) {
+        const errorMessage = req.flash("error")[0];
+        if (errorMessage) {
+          req.renderData.notification = { message: errorMessage, type: "error" };
+        } else {
+          req.flash("error", "");
+        }
 
-      console.log(req.renderData);
-      res.render("index", { ...req.renderData });
-    });
+        const newsItems = await db.newsItemsGetLatest();
+        for (const newsItem of newsItems) {
+          newsItem.publishedAtSince = moment(newsItem.publishedAt).fromNow();
+        }
+
+        req.renderData.newsItems = newsItems;
+
+        console.log(req.renderData);
+        res.render("index", { ...req.renderData });
+      })
+    );
 
     //
     // - check if user logged in
-    // 
+    //
     server.post(
       "/",
       middlewareSetMimeTypeTextHtml,

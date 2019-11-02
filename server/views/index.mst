@@ -37,29 +37,22 @@
           </div>
         </section>
 
+        <section class="section">
+          <div class="container">
+            {{#newsItems}}
+            {{> partials/news-item-card}}
+            {{/newsItems}}
+          </div>
+        </section>
+
         <!--
-        <section class="section ">
-          <div class="container background-result">
-            <nav class="level">
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Links</p>
-                  <p class="title">{{ numLinks }}</p>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Clicks</p>
-                  <p class="title">{{ numClicks }}</p>
-                </div>
-              </div>
-              <div class="level-item has-text-centered">
-                <div>
-                  <p class="heading">Uptime</p>
-                  <p class="title">456K</p>
-                </div>
-              </div>
-            </nav>
+        <section class="section">
+          <div class="container">
+            <div class="has-text-centered">
+              <button class="button is-primary">
+                load more
+              </button>
+            </div>
           </div>
         </section>
         -->

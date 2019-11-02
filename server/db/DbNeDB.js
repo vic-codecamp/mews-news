@@ -3,6 +3,7 @@ const {
   ensureIndexAsync,
   insertAsync,
   findOneAsync,
+  findAsync,
   removeAsync,
   countAsync
 } = require("./nedb-util");
@@ -17,13 +18,9 @@ module.exports = function(ic) {
 
       dbActions = createDatastore("actions");
 
-      return ensureIndexAsync(dbNews, { fieldName: "url", unique: true });
-
-      /*
-      .then(() => {
-        return ensureIndexAsync(dbClicks, { fieldName: "shortLink" });
+      return ensureIndexAsync(dbNews, { fieldName: "url", unique: true }).then(() => {
+        return ensureIndexAsync(dbNews, { fieldName: "publishedAt" });
       });
-      */
 
       /*
         .then(() => {
@@ -42,6 +39,10 @@ module.exports = function(ic) {
 
     newsItemRemoveById: function(id) {
       return removeAsync(dbNews, { _id: id });
+    },
+
+    newsItemsGetLatest: function(skip = 0, limit = 100) {
+      return findAsync(dbNews, {}, { publishedAt: -1 }, skip, limit);
     }
 
     /*

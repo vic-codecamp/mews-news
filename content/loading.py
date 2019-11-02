@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import requests
 
 url = ('https://newsapi.org/v2/top-headlines?'

@@ -7,6 +7,9 @@ yarn-error.log*
 
 #python object
 **/*.joblib
+**/*.obj
+**/*.joblib
+
 
 # Runtime data
 pids

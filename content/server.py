@@ -1,36 +1,22 @@
 #!/usr/bin/python3
 
 from flask import Flask, request
+from NewsTitleClassifier import *
 
-
-class SingletonMetaClass(type):
-    def __init__(cls,name,bases,dict):
-        super(SingletonMetaClass,cls) \
-            .__init__(name,bases,dict)
-        original_new = cls.__new__
-        def my_new(cls,*args,**kwds):
-            if cls.instance == None:
-                cls.instance = \
-                    original_new(cls,*args,**kwds)
-            return cls.instance
-        cls.instance = None
-        cls.__new__ = staticmethod(my_new)
-
-
-class MockMl:
-
-    __metaclass__ = SingletonMetaClass
-
-    def vote(self,user,title,vote):
-
-        print("User: "+user+" voted:"+vote+" on: "+title)
-        return True
-        # print("vote:"+user+" "+vote)
-
-    def getVotes(self,items):
-        for item in items:
-            print(item)
-        return True
+# class MockMl:
+#
+#     __metaclass__ = SingletonMetaClass
+#
+#     def vote(self,user,title,vote):
+#
+#         print("User: "+user+" voted:"+vote+" on: "+title)
+#         return True
+#         # print("vote:"+user+" "+vote)
+#
+#     def getVotes(self,items):
+#         for item in items:
+#             print(item)
+#         return True
 
 app = Flask(__name__)
 
@@ -39,6 +25,7 @@ def index():
     return 'ML service'
 
 # curl -d '{"username":"user", "title":"my title","vote":"0"}' -H "Content-Type: application/json" -X POST http://localhost:7070/api/vote
+
 @app.route('/api/vote', methods=[ 'POST'])
 def add_vote():
 
@@ -48,31 +35,39 @@ def add_vote():
     title = data["title"]
     vote = data["vote"]
 
-    ml = MockMl()
-
-    if ml.vote(user, title, vote):
+    ntc = SingleNewsTittleClassifier()
+    if ntc.vote(user, title,int( vote)):
         return "ok"
     else:
         return "error voting"
 
-# curl -d '[{"username":"user", "title":"my title","id":1},{"username":"user", "title":"my title2","id":2}]' -H "Content-Type: application/json" -X POST http://localhost:7070/api/votes
+# curl -d '[{"username":"user", "title":"my title","id":1},{"username":"user", "title":"BITCOIN EXPLOSIVE MOVE SOON!?! FLASH CRASH & BitMEX Email LEAK! Bullish News!!","id":2}]' -H "Content-Type: application/json" -X POST http://localhost:7070/api/votes
 @app.route('/api/votes', methods=[ 'POST'])
-def get_labels():
+def get_classification():
 
     data = request.get_json()
 
     if len(data) < 1:
         return "no data provided"
 
-    ml = MockMl()
-    if ml.getVotes(data):
-        return "ok"
+    ntc = SingleNewsTittleClassifier()
+
+    result = ntc.getVotes(data)
+
+    if result != False:
+        return result
     else:
         return "error getting votes"
 
-
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=7070)
+
+    print("Starting the News Clasifier")
+    ml = SingleNewsTittleClassifier()
+    ml.load()
+
+
+    # app.run(debug=True, host='0.0.0.0', port=7070)
+    app.run( host='0.0.0.0', port=7070)
 
 
 

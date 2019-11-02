@@ -30,13 +30,7 @@ class NewsTittleClassifier:
     learn_targets = []
 
     clf = False
-    v= ""
 
-    def s(self,v):
-        self.v = v
-
-    def g(self):
-        return self.v
 
     def reload_model(self):
         print("Triggering Reload")

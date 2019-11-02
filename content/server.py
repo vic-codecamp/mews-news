@@ -36,7 +36,7 @@ def add_vote():
     vote = data["vote"]
 
     ntc = SingleNewsTittleClassifier()
-    if ntc.vote(user,title,vote):
+    if ntc.vote(user, title,int( vote)):
         return "ok"
     else:
         return "error voting"
@@ -66,8 +66,8 @@ if __name__ == '__main__':
     ml.load()
 
 
-    app.run(debug=True, host='0.0.0.0', port=7070)
-    # app.run( host='0.0.0.0', port=7070)
+    # app.run(debug=True, host='0.0.0.0', port=7070)
+    app.run( host='0.0.0.0', port=7070)
 
 
 

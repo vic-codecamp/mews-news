@@ -16,7 +16,7 @@ class NewsTittles:
 
     def load_csv(self):
         df = pd.read_csv('history.csv')
-        data = pd.DataFrame(df, columns=['title', "action"])
+        data = pd.DataFrame(df, columns=['title', 'action'])
 
         documents =[]
         learn_targets = []
@@ -50,15 +50,29 @@ class NewsTittles:
         for doc, category in zip(docs_new, predicted):
             print('%r => %s' % (doc, self.label_cat[category]))
 
+    def vote(self, username, title, vote):
+        clf = load('classifier.joblib')
 
+        X = clf.named_steps['vect'].fit_transform([title])
+        X = clf.named_steps['tfidf'].fit_transform(X)
+
+        updated_clf = clf.named_steps['clf'].partial_fit(X, [vote])
+
+        dump(updated_clf, 'classifier.joblib')
 
 
 a = NewsTittles()
 a.train()
 
 docs_new = [
-    'Bitcoin’s Defense of Major Support May Fuel Price Bounce to $8,600',
+    'Trump’s Defense of Major Support May Fuel Price Bounce to $8,600',
 ]
+a.classify(docs_new)
+
+a.vote("vesi", "Trump still divided over decision to release Ukraine", 2)
+a.vote("vesi", "Live updates: Trump impeachment inquiry", 2)
+a.vote("vesi", "Why President Trump's move from New York to Florida could", 2)
+
 a.classify(docs_new)
 
 # a.print()

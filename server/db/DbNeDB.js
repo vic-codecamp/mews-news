@@ -13,14 +13,14 @@ module.exports = function(ic) {
   let dbActions = null;
 
   return {
-    init: function() {
+    init: async function() {
       dbNews = createDatastore("news");
 
-      dbActions = createDatastore("actions");
+      dbActions = createDatastore("actions." + ic.appUsername);
 
-      return ensureIndexAsync(dbNews, { fieldName: "url", unique: true }).then(() => {
-        return ensureIndexAsync(dbNews, { fieldName: "publishedAt" });
-      });
+      await ensureIndexAsync(dbNews, { fieldName: "url", unique: true });
+      await ensureIndexAsync(dbNews, { fieldName: "publishedAt" });
+      await ensureIndexAsync(dbActions, { fieldName: "newsItemId", unique: true });
 
       /*
         .then(() => {
@@ -37,6 +37,10 @@ module.exports = function(ic) {
       return findOneAsync(dbNews, { url });
     },
 
+    newsItemGetById: function(_id) {
+      return findOneAsync(dbNews, { _id });
+    },
+
     newsItemRemoveById: function(id) {
       return removeAsync(dbNews, { _id: id });
     },
@@ -49,8 +53,8 @@ module.exports = function(ic) {
       return insertAsync(dbActions, actionObj);
     },
 
-    actionGetByUserId: function(actionObj) {
-      return insertAsync(dbActions, actionObj);
+    actionsGetByUserId: function(userId) {
+      return findAsync(dbActions, { userId });
     },
 
     /*
@@ -74,6 +78,10 @@ module.exports = function(ic) {
       return countAsync(dbClicks, {});
     },
     */
+
+    actionRemoveByNewsItemId: function(newsItemId) {
+      return removeAsync(dbActions, { newsItemId });
+    },
 
     actionRemoveTestActions: function() {
       return removeAsync(dbActions, { test: { $exists: "true" } });

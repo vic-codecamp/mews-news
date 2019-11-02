@@ -1,10 +1,18 @@
 <div class="columns is-mobile">
   <form id="form-{{ _id }}-up-vote" method="post" action="/">
-    <input type="hidden" name="vote" value="2" />
+    <input type="hidden" name="action" value="2" />
+    <input type="hidden" name="newsItemId" value="{{ _id }}" />
+  </form>
+  <form id="form-{{ _id }}-up-vote-cancel" method="post" action="/">
+    <input type="hidden" name="action" value="1" />
     <input type="hidden" name="newsItemId" value="{{ _id }}" />
   </form>
   <form id="form-{{ _id }}-down-vote" method="post" action="/">
-    <input type="hidden" name="vote" value="0" />
+    <input type="hidden" name="action" value="0" />
+    <input type="hidden" name="newsItemId" value="{{ _id }}" />
+  </form>
+  <form id="form-{{ _id }}-down-vote-cancel" method="post" action="/">
+    <input type="hidden" name="action" value="1" />
     <input type="hidden" name="newsItemId" value="{{ _id }}" />
   </form>
 
@@ -12,6 +20,7 @@
     <div class="card">
       {{#username}}
       <header class="card-header">
+        {{^voteUp}}
         <a
           href="#"
           class="card-header-icon"
@@ -22,7 +31,24 @@
             <i class="far fa-thumbs-up" aria-hidden="true"></i>
           </span>
         </a>
-        <p class="card-header-title"><!-- {{ publishedAt }} --></p>
+        {{/voteUp}}
+        {{#voteUp}}
+        <a
+          href="#"
+          class="card-header-icon"
+          aria-label="upvote"
+          onClick="document.getElementById('form-{{ _id }}-up-vote-cancel').submit();"
+        >
+          <span class="icon">
+            <i class="fas fa-thumbs-up" aria-hidden="true"></i>
+          </span>
+        </a>
+        {{/voteUp}}
+        <p class="card-header-title">
+          <!-- {{ publishedAt }} -->
+          <!-- {{ action }} -->
+        </p>
+        {{^voteDown}}
         <a
           href="#"
           class="card-header-icon"
@@ -33,6 +59,19 @@
             <i class="far fa-thumbs-down" aria-hidden="true"></i>
           </span>
         </a>
+        {{/voteDown}}
+        {{#voteDown}}
+        <a
+          href="#"
+          class="card-header-icon"
+          aria-label="downvote"
+          onClick="document.getElementById('form-{{ _id }}-down-vote-cancel').submit();"
+        >
+          <span class="icon">
+            <i class="fas fa-thumbs-down" aria-hidden="true"></i>
+          </span>
+        </a>
+        {{/voteDown}}
       </header>
       {{/username}}
       <div class="card-image">

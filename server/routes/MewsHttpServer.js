@@ -8,7 +8,6 @@ const bodyParser = require("body-parser");
 const passport = require("passport");
 const flash = require("connect-flash");
 const path = require("path");
-const asyncHandler = require("express-async-handler");
 
 const { middlewareSetMimeTypeTextHtml } = require("./middleware");
 const auth = require("./auth");
@@ -111,7 +110,7 @@ class MewsHttpServer {
           req.flash("error", "");
         }
 
-        req.renderData.newsItems = await getLatestNewsItems(db);
+        req.renderData.newsItems = await getLatestNewsItems(db, req.renderData.username);
 
         console.log(getLoggableRenderData(req.renderData));
         res.render("index", { ...req.renderData });
@@ -129,11 +128,29 @@ class MewsHttpServer {
         console.log(req.body);
 
         // TODO: save user action
+        if (req.renderData.username) {
+          const { _id, url, title, description } = await db.newsItemGetById(req.body.newsItemId);
 
-        // TODO: cycle through funny messages as an easter egg
-        req.renderData.notification = { message: "Every vote counts!", type: "success" };
+          const actionObj = {
+            userId: req.renderData.username,
+            newsItemId: _id,
+            url,
+            title,
+            description,
+            action: req.body.action,
+            when: moment().unix()
+          };
 
-        req.renderData.newsItems = await getLatestNewsItems(db);
+          await db.actionRemoveByNewsItemId(_id);
+          await db.actionAdd(actionObj);
+
+          // TODO: cycle through funny messages as an easter egg
+          req.renderData.notification = { message: "Every vote counts!", type: "success" };
+        } else {
+          req.renderData.notification = { message: "You must be logged in to perform this action!", type: "error" };
+        }
+
+        req.renderData.newsItems = await getLatestNewsItems(db, req.renderData.username);
 
         console.log(getLoggableRenderData(req.renderData));
         res.render("index", { ...req.renderData });
@@ -221,11 +238,37 @@ const getStats = async function(db) {
 };
 */
 
-const getLatestNewsItems = async function(db) {
+const getLatestNewsItems = async function(db, username) {
   const newsItems = await db.newsItemsGetLatest();
   for (const newsItem of newsItems) {
+    newsItem.action = "";
+    newsItem.voteUp = false;
+    newsItem.voteDown = false;
     newsItem.publishedAtSince = moment(newsItem.publishedAt).fromNow();
   }
+
+  if (newsItems.length && username) {
+    const userActions = await db.actionsGetByUserId(username);
+    const userActionMap = {};
+
+    for (const userAction of userActions) {
+      userActionMap[userAction.newsItemId] = userAction;
+    }
+
+    for (const newsItem of newsItems) {
+      const userAction = userActionMap[newsItem._id];
+      if (userAction) {
+        const action = userAction.action;
+        newsItem.action = action;
+        if (action === "2") {
+          newsItem.voteUp = true;
+        } else if (action === "0") {
+          newsItem.voteDown = true;
+        }
+      }
+    }
+  }
+
   return newsItems;
 };
 

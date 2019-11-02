@@ -37,9 +37,10 @@ const login = function(ic, request) {
     .send({ username: ic.appUsername, password: ic.appPassword });
 };
 
-const getRandomActionObj = function({ userId, url, title, action }) {
+const getRandomActionObj = function({ userId, newsItemId, url, title, action }) {
   return {
     userId: userId || chance.guid(),
+    newsItemId: newsItemId || chance.guid(),
     url: url || chance.url({}),
     title: title || chance.sentence({}),
     action: action || chance.natural({ min: 0, max: 2 }),

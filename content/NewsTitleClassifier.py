@@ -6,19 +6,37 @@ from sklearn.feature_extraction.text import TfidfTransformer
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
 from joblib import dump, load
-import os
-import subprocess
+import os, subprocess, json
 
-class NewsTittles:
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class NewsTittleClassifier:
+
+    # __metaclass__ = Singleton
 
     labels = [0, 1, 2]
-    label_cat = ["down", "netruaal", "up"]
+    label_cat = ["down", "neutral", "up"]
 
     dumpFileName = "classifier.joblib"
     csvFileName = "history.csv"
 
     documents =[]
     learn_targets = []
+
+    clf = False
+    v= ""
+
+    def s(self,v):
+        self.v = v
+
+    def g(self):
+        return self.v
 
     def reload_model(self):
         print("Triggering Reload")
@@ -47,9 +65,7 @@ class NewsTittles:
             self.documents.append(row['title'])
             self.learn_targets.append(row["action"])
 
-
     def train(self):
-
         text_clf = Pipeline([
             ('vect', CountVectorizer()),
             ('tfidf', TfidfTransformer()),
@@ -57,18 +73,34 @@ class NewsTittles:
         ])
 
         # fit pipeline
-        clf = text_clf.fit(self.documents, self.learn_targets)
+        self.clf = text_clf.fit(self.documents, self.learn_targets)
 
         # persist trained pipeline
-        dump(clf, 'classifier.joblib')
+        # dump(clf, 'classifier.joblib')
+
+    def classify_single(self, title):
+        return self.clf.predict([title])[0]
 
     def classify(self, titles):
-        clf = load('classifier.joblib')
+        # clf = load('classifier.joblib')
 
-        predicted = clf.predict(titles)
+        predicted = self.clf.predict(titles)
 
         for doc, category in zip(docs_new, predicted):
             print('%r => %s' % (doc, self.label_cat[category]))
+
+    def getVotes(self,data):
+
+        r =[]
+        for item in data:
+
+            v = self.classify_single(item["title"])
+            item["vote"] = int(v)
+            r.append(item)
+
+        return json.dumps(r)
+
+
 
     # def vote(self, username, title, vote):
     #     clf = load('classifier.joblib')
@@ -91,21 +123,24 @@ class NewsTittles:
         #
         # dump(updated_clf, 'classifier.joblib')
 
+class SingleNewsTittleClassifier(NewsTittleClassifier,metaclass=Singleton):
+    pass
 
-a = NewsTittles()
-a.reload_model()
 
-docs_new = [
-    'Trump’s Defense of Major Support May Fuel Price Bounce to $8,600',
-]
-# a.classify(docs_new)
+if __name__ == '__main__':
+    c = NewsTittleClassifier()
+    c.reload_model()
 
-# a.vote("vesi", "Trump still divided over decision to release Ukraine", 2)
-# a.vote("vesi", "Live updates: Trump impeachment inquiry", 2)
-# a.vote("vesi", "Why President Trump's move from New York to Florida could", 2)
+    docs_new = [
+        'Trump’s Defense of Major Support May Fuel Price Bounce to $8,600',
+    ]
+    # a.classify(docs_new)
 
-a.classify(docs_new)
+    # a.vote("vesi", "Trump still divided over decision to release Ukraine", 2)
+    # a.vote("vesi", "Live updates: Trump impeachment inquiry", 2)
+    # a.vote("vesi", "Why President Trump's move from New York to Florida could", 2)
 
-# a.print()
+    c.classify(docs_new)
+
 
 

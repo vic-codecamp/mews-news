@@ -52,6 +52,32 @@ const findOneAsync = function(db, params) {
   });
 };
 
+const findAsync = function(db, params = {}, sortObj = {}, skip = null, limit = null) {
+  return new Promise((resolve, reject) => {
+    try {
+      let findObj = db.find(params).sort(sortObj);
+
+      if (skip !== null) {
+        findObj = findObj.skip(skip);
+      }
+
+      if (limit !== null) {
+        findObj = findObj.limit(limit);
+      }
+
+      findObj.exec(function(err, docFound) {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(docFound);
+      });
+    } catch (err) {
+      reject(err);
+    }
+  });
+};
+
 const removeAsync = function(db, params) {
   return new Promise((resolve, reject) => {
     try {
@@ -89,6 +115,7 @@ module.exports = {
   ensureIndexAsync,
   insertAsync,
   findOneAsync,
+  findAsync,
   removeAsync,
   countAsync
 };

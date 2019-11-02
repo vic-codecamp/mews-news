@@ -29,7 +29,6 @@ describe("Index routes", function() {
     it("should get the index page with login enabled", async function() {
       // when
       const response = await request.get("/");
-      // console.log(response.text);
 
       // then
       const $ = cheerio.load(response.text);

@@ -1,6 +1,8 @@
 const { expect } = require("chai");
 
 const testUtil = require("../util/test-util");
+
+/*
 const linkSchema = require("./link");
 
 describe("link schema", function() {
@@ -38,3 +40,4 @@ describe("link schema", function() {
     expect(value).to.deep.equal(linkObj);
   });
 });
+*/

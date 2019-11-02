@@ -3,26 +3,25 @@ const {
   ensureIndexAsync,
   insertAsync,
   findOneAsync,
+  findAsync,
   removeAsync,
   countAsync
 } = require("./nedb-util");
 
 module.exports = function(ic) {
-  let dbLinks = null;
-  let dbClicks = null;
+  let dbNews = null;
+  let dbActions = null;
 
   return {
-    init: function() {
+    init: async function() {
+      dbNews = createDatastore("news");
 
-      /*
-      dbLinks = createDatastore("links");
+      dbActions = createDatastore("actions." + ic.appUsername);
 
-      dbClicks = createDatastore("clicks");
+      await ensureIndexAsync(dbNews, { fieldName: "url", unique: true });
+      await ensureIndexAsync(dbNews, { fieldName: "publishedAt" });
+      await ensureIndexAsync(dbActions, { fieldName: "newsItemId", unique: true });
 
-      return ensureIndexAsync(dbLinks, { fieldName: "shortLink", unique: true }).then(() => {
-        return ensureIndexAsync(dbClicks, { fieldName: "shortLink" });
-      });
-      */
       /*
         .then(() => {
           return ensureIndexAsync(dbClicks, { fieldName: "userId" });
@@ -30,19 +29,35 @@ module.exports = function(ic) {
         */
     },
 
+    newsItemAdd: function(objNewsItem) {
+      return insertAsync(dbNews, objNewsItem);
+    },
+
+    newsItemGetByUrl: function(url) {
+      return findOneAsync(dbNews, { url });
+    },
+
+    newsItemGetById: function(_id) {
+      return findOneAsync(dbNews, { _id });
+    },
+
+    newsItemRemoveById: function(id) {
+      return removeAsync(dbNews, { _id: id });
+    },
+
+    newsItemsGetLatest: function(skip = 0, limit = 100) {
+      return findAsync(dbNews, {}, { publishedAt: -1 }, skip, limit);
+    },
+
+    actionAdd: function(actionObj) {
+      return insertAsync(dbActions, actionObj);
+    },
+
+    actionsGetByUserId: function(userId) {
+      return findAsync(dbActions, { userId });
+    },
+
     /*
-    linkAdd: function(objLink) {
-      return insertAsync(dbLinks, objLink);
-    },
-
-    linkGetByShortLink: function(shortLink) {
-      return findOneAsync(dbLinks, { shortLink });
-    },
-
-    linkRemoveById: function(id) {
-      return removeAsync(dbLinks, { _id: id });
-    },
-
     linkRemoveTestLinks: function() {
       return removeAsync(dbLinks, { test: { $exists: "true" } }).then(num1 => {
         return removeAsync(dbLinks, { link: "test" }).then(num2 => {
@@ -62,10 +77,14 @@ module.exports = function(ic) {
     clickCount: function() {
       return countAsync(dbClicks, {});
     },
-
-    clickRemoveTestClicks: function() {
-      return removeAsync(dbClicks, { test: { $exists: "true" } });
-    }
     */
+
+    actionRemoveByNewsItemId: function(newsItemId) {
+      return removeAsync(dbActions, { newsItemId });
+    },
+
+    actionRemoveTestActions: function() {
+      return removeAsync(dbActions, { test: { $exists: "true" } });
+    }
   };
 };

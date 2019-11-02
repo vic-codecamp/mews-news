@@ -17,26 +17,16 @@ const linkSchema = require("../schemas/link");
 const { generateShortLink } = require("../util/link-util");
 */
 
-
-const wrap = fn => {
-  return async function(req, res, next) {
-    let e = null;
-    try {
-      await fn(req, res, next);
-    } catch (err) {
-      e = err;
-      next(err);
-    }
-
-    if (!e) {
-      next();
-    }
+const wrap = fn =>
+  function asyncUtilWrap(...args) {
+    const fnReturn = fn(...args);
+    const next = args[args.length - 1];
+    return Promise.resolve(fnReturn).catch(next);
   };
-};
 
 class MewsHttpServer {
   constructor(ic, db) {
-    ic.logger.info("Shorty server running in " + ic.env);
+    ic.logger.info("Mews server running in " + ic.env);
 
     const lastUpdated = moment.unix(ic.lastUpdated).fromNow();
 
@@ -109,54 +99,60 @@ class MewsHttpServer {
     // get the main page
     // in case there was a login attempt, display a notification (due to redirection)
     //
-    server.get("/", middlewareSetMimeTypeTextHtml, /* middlewareStats,*/ function(req, res) {
-      const errorMessage = req.flash("error")[0];
-      if (errorMessage) {
-        req.renderData.notification = { message: errorMessage, type: "error" };
-      } else {
-        req.flash("error", "");
-      }
+    server.get(
+      "/",
+      middlewareSetMimeTypeTextHtml,
+      /* middlewareStats,*/ wrap(async function(req, res) {
+        const errorMessage = req.flash("error")[0];
+        if (errorMessage) {
+          req.renderData.notification = { message: errorMessage, type: "error" };
+        } else {
+          req.flash("error", "");
+        }
 
-      console.log(req.renderData);
-      res.render("index", { ...req.renderData });
-    });
+        req.renderData.newsItems = await getLatestNewsItems(db, req.renderData.username);
+
+        console.log(getLoggableRenderData(req.renderData));
+        res.render("index", { ...req.renderData });
+      })
+    );
 
     //
     // - check if user logged in
-    // 
+    //
     server.post(
       "/",
       middlewareSetMimeTypeTextHtml,
       // middlewareStats,
       wrap(async function(req, res) {
-        /*
-        let linkObj = {
-          link: req.body.link,
-          userId: req.renderData.username,
-          when: moment().unix()
-        };
+        console.log(req.body);
 
-        if (linkObj.userId) {
-          const { error } = linkSchema.validate(linkObj);
-          if (error) {
-            req.renderData.notification = { message: error.message, type: "error" };
-          } else {
-            linkObj = await shortenLink(ic, db, linkObj);
-            req.renderData.notification = { message: "Successfully shortened link: " + linkObj.link, type: "success" };
-          }
+        // TODO: save user action
+        if (req.renderData.username) {
+          const { _id, url, title, description } = await db.newsItemGetById(req.body.newsItemId);
+
+          const actionObj = {
+            userId: req.renderData.username,
+            newsItemId: _id,
+            url,
+            title,
+            description,
+            action: req.body.action,
+            when: moment().unix()
+          };
+
+          await db.actionRemoveByNewsItemId(_id);
+          await db.actionAdd(actionObj);
+
+          // TODO: cycle through funny messages as an easter egg
+          req.renderData.notification = { message: "Every vote counts!", type: "success" };
         } else {
-          req.renderData.notification = { message: "Need to be logged in to perform this action!", type: "error" };
+          req.renderData.notification = { message: "You must be logged in to perform this action!", type: "error" };
         }
-        */
 
-        /*
-        if (!req.renderData.notification) {
-         
-        }
-        */
-        // req.renderData = Object.assign(req.renderData, linkObj);
+        req.renderData.newsItems = await getLatestNewsItems(db, req.renderData.username);
 
-        console.log(req.renderData);
+        console.log(getLoggableRenderData(req.renderData));
         res.render("index", { ...req.renderData });
       })
     );
@@ -241,5 +237,43 @@ const getStats = async function(db) {
   };
 };
 */
+
+const getLatestNewsItems = async function(db, username) {
+  const newsItems = await db.newsItemsGetLatest();
+  for (const newsItem of newsItems) {
+    newsItem.action = "";
+    newsItem.voteUp = false;
+    newsItem.voteDown = false;
+    newsItem.publishedAtSince = moment(newsItem.publishedAt).fromNow();
+  }
+
+  if (newsItems.length && username) {
+    const userActions = await db.actionsGetByUserId(username);
+    const userActionMap = {};
+
+    for (const userAction of userActions) {
+      userActionMap[userAction.newsItemId] = userAction;
+    }
+
+    for (const newsItem of newsItems) {
+      const userAction = userActionMap[newsItem._id];
+      if (userAction) {
+        const action = userAction.action;
+        newsItem.action = action;
+        if (action === "2") {
+          newsItem.voteUp = true;
+        } else if (action === "0") {
+          newsItem.voteDown = true;
+        }
+      }
+    }
+  }
+
+  return newsItems;
+};
+
+const getLoggableRenderData = function(renderData) {
+  return { ...renderData, newsItemsCount: renderData.newsItems ? renderData.newsItems.length : -1, newsItems: null };
+};
 
 module.exports = MewsHttpServer;

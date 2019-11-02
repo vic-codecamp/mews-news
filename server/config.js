@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const LogService = require("./util/LogService");
+const LogService = require("./services/LogService");
 
 const lastUpdated = require("../last-updated.json");
 const packageJson = require("../package.json");
@@ -15,7 +15,8 @@ const config = {
   appUrl: process.env.APP_URL,
   lastUpdated: lastUpdated.lastUpdated,
   env: process.env.NODE_ENV || "production", // run in production by default
-  version: packageJson.version
+  version: packageJson.version,
+  newsApiKey: process.env.NEWSAPI_KEY
 };
 
 module.exports = {

@@ -1,11 +1,9 @@
 const configuration = require("./config");
 
-const ShortyHttpServer = require("./routes/MewsHttpServer");
+const MewsHttpServer = require("./routes/MewsHttpServer");
 const DbNeDB = require("./db/DbNeDB");
+const NewsApiService = require("./services/NewsApiService");
 
-// TODO: db integration - shorten, track clicks
-// TODO: setup cache
-// TODO: add tests
 // TODO: logo
 
 function main() {
@@ -15,10 +13,12 @@ function main() {
       const db = new DbNeDB(ic);
       await db.init();
 
-      const server = new ShortyHttpServer(ic, db);
+      const newsApiService = new NewsApiService(ic, db);
+      await newsApiService.init();
+
+      const server = new MewsHttpServer(ic, db);
       server.listen(ic.httpPort);
       ic.logger.info("MewsHttpServer listening on " + ic.httpPort);
-      
     })
     .catch(err => {
       console.error(err);

@@ -17,7 +17,7 @@ function main() {
 
       const server = new ShortyHttpServer(ic, db);
       server.listen(ic.httpPort);
-      ic.logger.info("ShortyHttpServer listening on " + ic.httpPort);
+      ic.logger.info("MewsHttpServer listening on " + ic.httpPort);
       
     })
     .catch(err => {

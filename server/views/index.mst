@@ -9,9 +9,20 @@
         <section class="hero is-light">
           <div class="hero-body">
             <div class="container has-text-centered">
+              <h2 class="subtitle">
+                <span class="has-text-centered is-block">
+                  No bots, no baby pictures and no weird uncles.
+                </span>
+                <div></div>
+              </h2>
               <h1 class="title m-t-2">
                 <span class="is-size-2 has-text-centered is-block">
-                  Your personalized news feed
+                  {{#username}}
+                  Your personalized news feed.
+                  {{/username}}
+                  {{^username}}
+                  Sign in for your personalized news feed.
+                  {{/username}}
                 </span>
               </h1>
 

@@ -30,21 +30,21 @@ module.exports = function(ic) {
           return ensureIndexAsync(dbClicks, { fieldName: "userId" });
         });
         */
+    },
+
+    newsItemAdd: function(objNewsItem) {
+      return insertAsync(dbNews, objNewsItem);
+    },
+
+    newsItemGetByUrl: function(url) {
+      return findOneAsync(dbNews, { url });
+    },
+
+    newsItemRemoveById: function(id) {
+      return removeAsync(dbNews, { _id: id });
     }
 
     /*
-    linkAdd: function(objLink) {
-      return insertAsync(dbLinks, objLink);
-    },
-
-    linkGetByShortLink: function(shortLink) {
-      return findOneAsync(dbLinks, { shortLink });
-    },
-
-    linkRemoveById: function(id) {
-      return removeAsync(dbLinks, { _id: id });
-    },
-
     linkRemoveTestLinks: function() {
       return removeAsync(dbLinks, { test: { $exists: "true" } }).then(num1 => {
         return removeAsync(dbLinks, { link: "test" }).then(num2 => {

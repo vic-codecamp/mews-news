@@ -1,3 +1,4 @@
+{{#title}}
 <div class="columns is-mobile">
   <form id="form-{{ _id }}-up-vote" method="post" action="/">
     <input type="hidden" name="action" value="2" />
@@ -21,24 +22,14 @@
       {{#username}}
       <header class="card-header">
         {{^voteUp}}
-        <a
-          href="#"
-          class="card-header-icon"
-          aria-label="upvote"
-          onClick="document.getElementById('form-{{ _id }}-up-vote').submit();"
-        >
+        <a href="#" class="card-header-icon" aria-label="upvote" onClick="clickVote('form-{{ _id }}-up-vote');">
           <span class="icon">
             <i class="far fa-thumbs-up" aria-hidden="true"></i>
           </span>
         </a>
         {{/voteUp}}
         {{#voteUp}}
-        <a
-          href="#"
-          class="card-header-icon"
-          aria-label="upvote"
-          onClick="document.getElementById('form-{{ _id }}-up-vote-cancel').submit();"
-        >
+        <a href="#" class="card-header-icon" aria-label="upvote" onClick="clickVote('form-{{ _id }}-up-vote-cancel');">
           <span class="icon">
             <i class="fas fa-thumbs-up" aria-hidden="true"></i>
           </span>
@@ -49,12 +40,7 @@
           <!-- {{ action }} -->
         </p>
         {{^voteDown}}
-        <a
-          href="#"
-          class="card-header-icon"
-          aria-label="downvote"
-          onClick="document.getElementById('form-{{ _id }}-down-vote').submit();"
-        >
+        <a href="#" class="card-header-icon" aria-label="downvote" onClick="clickVote('form-{{ _id }}-down-vote');">
           <span class="icon">
             <i class="far fa-thumbs-down" aria-hidden="true"></i>
           </span>
@@ -65,7 +51,7 @@
           href="#"
           class="card-header-icon"
           aria-label="downvote"
-          onClick="document.getElementById('form-{{ _id }}-down-vote-cancel').submit();"
+          onClick="clickVote('form-{{ _id }}-down-vote-cancel');"
         >
           <span class="icon">
             <i class="fas fa-thumbs-down" aria-hidden="true"></i>
@@ -74,11 +60,14 @@
         {{/voteDown}}
       </header>
       {{/username}}
+
+      {{#urlToImage}}
       <div class="card-image">
         <figure class="image is-16by9">
           <a href="{{ url }}"><img src="{{ urlToImage }}" alt=""/></a>
         </figure>
       </div>
+      {{/urlToImage}}
       <div class="card-content">
         <div class="media">
           <!--
@@ -96,12 +85,15 @@
           </div>
         </div>
 
+        {{#description}}
         <div class="content">
           {{ description }}
           <br />
           <!-- <time datetime="{{ publishedAt }}">{{ publishedAt }}</time> -->
         </div>
+        {{/description}}
       </div>
     </div>
   </div>
 </div>
+{{/title}}

@@ -1,5 +1,7 @@
 const Joi = require("@hapi/joi");
 
+// TODO: 
+/*
 module.exports = Joi.object({
   link: Joi.string()
     .max(4096, "utf8")
@@ -11,3 +13,4 @@ module.exports = Joi.object({
   when: Joi.number().required(),
   test: Joi.boolean()
 });
+*/

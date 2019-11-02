@@ -8,27 +8,29 @@ const {
 } = require("./nedb-util");
 
 module.exports = function(ic) {
-  let dbLinks = null;
-  let dbClicks = null;
+  let dbNews = null;
+  let dbActions = null;
 
   return {
     init: function() {
+      dbNews = createDatastore("news");
+
+      dbActions = createDatastore("actions");
+
+      return ensureIndexAsync(dbNews, { fieldName: "url", unique: true });
 
       /*
-      dbLinks = createDatastore("links");
-
-      dbClicks = createDatastore("clicks");
-
-      return ensureIndexAsync(dbLinks, { fieldName: "shortLink", unique: true }).then(() => {
+      .then(() => {
         return ensureIndexAsync(dbClicks, { fieldName: "shortLink" });
       });
       */
+
       /*
         .then(() => {
           return ensureIndexAsync(dbClicks, { fieldName: "userId" });
         });
         */
-    },
+    }
 
     /*
     linkAdd: function(objLink) {

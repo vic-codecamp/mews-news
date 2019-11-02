@@ -38,28 +38,24 @@ const login = function(ic, request) {
     .send({ username: ic.appUsername, password: ic.appPassword });
 };
 
-const getRandomLinkObj = function({ link, shortLink, userId }) {
+const getRandomActionObj = function({ username, url, title, action }) {
   return {
-    link: link || chance.url({}),
-    shortLink: shortLink || chance.hash({}),
-    userId: userId || chance.guid({}),
+    username: username || chance.guid(),
+    url: url || chance.url({}),
+    title: title || chance.sentence({}),
+    action: action || chance.natural({ min: 0, max: 2 }),
     when: moment().unix(),
     test: true
   };
 };
 
-const getRandomClickObj = function({ link, shortLink, userId }) {
-  return {
-    ...getRandomLinkObj({ link, shortLink, userId }),
-    when: new Date().getTime() / 1000
-  };
-};
-
 const cleanUpDb = async function(db) {
+  /*
   const numLinksRemoved = await db.linkRemoveTestLinks();
   // console.log("numLinksRemoved", numLinksRemoved);
   const numClicksRemoved = await db.clickRemoveTestClicks();
   // console.log("numClicksRemoved", numClicksRemoved);
+  */
 };
 
 module.exports = {
@@ -68,7 +64,6 @@ module.exports = {
   routeTestSetup,
   routeTestTeardown,
   login,
-  getRandomLinkObj,
-  getRandomClickObj,
-  cleanUpDb
+  cleanUpDb,
+  getRandomActionObj
 };

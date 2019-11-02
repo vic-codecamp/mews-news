@@ -13,6 +13,26 @@ Before starting mews-news, make sure that you copy `.env.dist` to `.env` and fil
 - passport authentication
 - moustache templating
 
+## machine learning
+
+### mock server
+
+```bash
+cd content
+pip3 install flask
+./server.py
+```
+
+endpoints samples:
+
+vote a title:
+
+    curl -d '{"username":"user", "title":"my title","vote":"0"}' -H "Content-Type: application/json" -X POST http://localhost:7070/api/vote
+
+get votings:
+
+    curl -d '[{"username":"user", "title":"my title","id":1},{"username":"user", "title":"my title2","id":2}]' -H "Content-Type: application/json" -X POST http://localhost:7070/api/votes
+
 ## development
 
 ```bash

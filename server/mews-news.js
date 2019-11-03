@@ -4,6 +4,7 @@ const MewsHttpServer = require("./routes/MewsHttpServer");
 const DbNeDB = require("./db/DbNeDB");
 const NewsApiService = require("./services/NewsApiService");
 const TextClassificationService = require("./services/TextClassificationService");
+const TextClassificationCredulousService = require("./services/TextClassificationCredulousService");
 
 // TODO: logo
 
@@ -17,7 +18,9 @@ function main() {
       const newsApiService = new NewsApiService(ic, db);
       await newsApiService.init();
 
-      const textClassificationService = new TextClassificationService(ic, db);
+      const textClassificationService = null;
+      /*
+      const textClassificationService = new TextClassificationCredulousService(ic, db);
       const actions = await db.actionsGetByUserId(ic.appUsername);
 
       if (actions.length) {
@@ -27,9 +30,10 @@ function main() {
       } else {
         textClassificationService.addDocument("trump", "1");
         textClassificationService.addDocument("bitcoin", "1");
-        textClassificationService.addDocument("cricket", "0");
-        textClassificationService.addDocument("climate", "2");
+        // textClassificationService.addDocument("cricket", "0");
+        // textClassificationService.addDocument("climate", "2");
       }
+      */
 
       const server = new MewsHttpServer(ic, db, textClassificationService);
       server.listen(ic.httpPort);

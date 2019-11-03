@@ -38,6 +38,7 @@
         <p class="card-header-title">
           <!-- {{ publishedAt }} -->
           <!-- {{ action }} -->
+          {{ vote }}
         </p>
         {{^voteDown}}
         <a href="#" class="card-header-icon" aria-label="downvote" onClick="clickVote('form-{{ _id }}-down-vote');">

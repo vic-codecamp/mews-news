@@ -11,6 +11,7 @@ const path = require("path");
 
 const { middlewareSetMimeTypeTextHtml } = require("./middleware");
 const auth = require("./auth");
+const { getLatestNewsItems, getLoggableRenderData } = require("./route-util");
 
 /*
 const linkSchema = require("../schemas/link");
@@ -237,43 +238,5 @@ const getStats = async function(db) {
   };
 };
 */
-
-const getLatestNewsItems = async function(db, username) {
-  const newsItems = await db.newsItemsGetLatest();
-  for (const newsItem of newsItems) {
-    newsItem.action = "";
-    newsItem.voteUp = false;
-    newsItem.voteDown = false;
-    newsItem.publishedAtSince = moment(newsItem.publishedAt).fromNow();
-  }
-
-  if (newsItems.length && username) {
-    const userActions = await db.actionsGetByUserId(username);
-    const userActionMap = {};
-
-    for (const userAction of userActions) {
-      userActionMap[userAction.newsItemId] = userAction;
-    }
-
-    for (const newsItem of newsItems) {
-      const userAction = userActionMap[newsItem._id];
-      if (userAction) {
-        const action = userAction.action;
-        newsItem.action = action;
-        if (action === "2") {
-          newsItem.voteUp = true;
-        } else if (action === "0") {
-          newsItem.voteDown = true;
-        }
-      }
-    }
-  }
-
-  return newsItems;
-};
-
-const getLoggableRenderData = function(renderData) {
-  return { ...renderData, newsItemsCount: renderData.newsItems ? renderData.newsItems.length : -1, newsItems: null };
-};
 
 module.exports = MewsHttpServer;

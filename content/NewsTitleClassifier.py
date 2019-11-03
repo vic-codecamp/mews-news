@@ -73,12 +73,13 @@ class NewsTittleClassifier:
     # load the csv file into memory
     def __load_csv(self):
         df = pd.read_csv(self.csvFileName)
+
         data = pd.DataFrame(df, columns=['title', 'action'])
 
         # iterate over the rows and append every row to the documents array
         for index, row in data.iterrows():
             self.documents.append(row['title'])
-            self.learn_targets.append(row["action"])
+            self.learn_targets.append(str(row["action"]))
 
     # Train a new classifier, normally when loading a csv file
     def __train(self):
@@ -91,12 +92,16 @@ class NewsTittleClassifier:
         pickle.dump( self.clf, open( self.dumpFileName+"_clf.obj", "wb"))
         pickle.dump( self.count_vect, open( self.dumpFileName+"_cv.obj", "wb"))
         pickle.dump( self.tfidf_transformer, open( self.dumpFileName+"_tfidf.obj", "wb"))
+        # pickle.dump( self.documents, open( self.dumpFileName+"documents.obj", "wb"))
+        # pickle.dump( self.learn_targets, open( self.dumpFileName+"_targets.obj", "wb"))
 
 
     def __load_model(self):
         self.clf = pickle.load( open( self.dumpFileName+"_clf.obj", "rb"))
         self.count_vect = pickle.load( open( self.dumpFileName+"_cv.obj", "rb"))
         self.tfidf_transformer = pickle.load( open( self.dumpFileName+"_tfidf.obj", "rb"))
+        # self.documents = pickle.load( open( self.dumpFileName+"documents.obj", "rb"))
+        # self.learn_targets = pickle.load( open( self.dumpFileName+"_targets.obj", "rb"))
 
     # return the classification value of a single title
     def classify_single(self, title):
@@ -126,9 +131,11 @@ class NewsTittleClassifier:
         X_train_counts = self.count_vect.transform([title])
         X_train_tfidf = self.tfidf_transformer.transform(X_train_counts)
 
-        self.clf.partial_fit(X_train_tfidf,[vote])
+        self.clf.partial_fit(X_train_tfidf,[str(vote)])
         self.__dump_model()
+
         print([title, vote])
+
         return True
 
 

@@ -19,7 +19,8 @@ function main() {
       const newsApiService = new NewsApiService(ic, db);
       await newsApiService.init();
 
-      // const textClassificationService = null;
+      const textClassificationService = null;
+      /*
       const textClassificationService = new TextClassificationBrainJsService(ic, db);
       const actions = await db.actionsGetByUserId(ic.appUsername);
 
@@ -35,7 +36,7 @@ function main() {
         // textClassificationService.addDocument("cricket", "0");
         // textClassificationService.addDocument("climate", "2");
       }
-      // */
+      */
 
       const server = new MewsHttpServer(ic, db, textClassificationService);
       server.listen(ic.httpPort);

@@ -5,7 +5,7 @@ curl -d '[{"username":"user", "title":"Trump  Defense of Major Support May Fuel 
 
 
 echo ""
-echo "upvote trump"
+echo "downvote trump"
 
 curl -d '{"username":"user",  "title":"Trump still divided over decision to release Ukraine","vote":"0"}' -H "Content-Type: application/json" -X POST http://localhost:7070/api/vote
 echo ""

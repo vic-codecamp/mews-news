@@ -44,14 +44,11 @@ class NewsTittleClassifier:
 
     #loaad the model dump file if is present, if not create a new one based on csv
     def load(self):
-        if not os.path.isfile(self.dumpFileName+"_clf.obj"):
-            print("loading csv file")
-            self.__load_csv()
-            self.__train()
-            self.__unload()
-        else:
+        if os.path.isfile(self.dumpFileName+"_clf.obj"):
             print("loading dump file")
             self.__load_model()
+        else:
+            self.vote("ignore","the",1)
 
     # def reload_model(self):
     #     print("Triggering Reload")
@@ -92,16 +89,16 @@ class NewsTittleClassifier:
         pickle.dump( self.clf, open( self.dumpFileName+"_clf.obj", "wb"))
         pickle.dump( self.count_vect, open( self.dumpFileName+"_cv.obj", "wb"))
         pickle.dump( self.tfidf_transformer, open( self.dumpFileName+"_tfidf.obj", "wb"))
-        # pickle.dump( self.documents, open( self.dumpFileName+"documents.obj", "wb"))
-        # pickle.dump( self.learn_targets, open( self.dumpFileName+"_targets.obj", "wb"))
+        pickle.dump( self.documents, open( self.dumpFileName+"documents.obj", "wb"))
+        pickle.dump( self.learn_targets, open( self.dumpFileName+"_targets.obj", "wb"))
 
 
     def __load_model(self):
         self.clf = pickle.load( open( self.dumpFileName+"_clf.obj", "rb"))
         self.count_vect = pickle.load( open( self.dumpFileName+"_cv.obj", "rb"))
         self.tfidf_transformer = pickle.load( open( self.dumpFileName+"_tfidf.obj", "rb"))
-        # self.documents = pickle.load( open( self.dumpFileName+"documents.obj", "rb"))
-        # self.learn_targets = pickle.load( open( self.dumpFileName+"_targets.obj", "rb"))
+        self.documents = pickle.load( open( self.dumpFileName+"documents.obj", "rb"))
+        self.learn_targets = pickle.load( open( self.dumpFileName+"_targets.obj", "rb"))
 
     # return the classification value of a single title
     def classify_single(self, title):
@@ -127,11 +124,19 @@ class NewsTittleClassifier:
 
         return json.dumps(r)
 
-    def vote(self, username, title, vote):
-        X_train_counts = self.count_vect.transform([title])
-        X_train_tfidf = self.tfidf_transformer.transform(X_train_counts)
+    def vote_retrain(self,text,vote):
+        self.documents.append(text)
+        self.learn_targets.append(str(vote))
+        self.__train()
 
-        self.clf.partial_fit(X_train_tfidf,[str(vote)])
+    def vote(self, username, title, vote):
+
+        self.vote_retrain(title,vote)
+        # X_train_counts = self.count_vect.transform([title])
+        # X_train_tfidf = self.tfidf_transformer.transform(X_train_counts)
+        #
+        # self.clf.partial_fit(X_train_tfidf,[str(vote)])
+
         self.__dump_model()
 
         print([title, vote])

@@ -34,7 +34,7 @@ VOTE=2
 VOTE_TEXT="California earthquake: Deadly fault line threatens epic quake"
 curl -d '{"username":"user",  "title":"'"$VOTE_TEXT"'","vote":'$VOTE'}' -H "Content-Type: application/json" -X POST http://localhost:7070/api/vote
 echo ""
-VOTE_TEXT="Brazil Amazon forest defender shot dead by illegal loggers"
+VOTE_TEXT="Brazil Amazo n forest defender shot dead by illegal loggers"
 curl -d '{"username":"user",  "title":"'"$VOTE_TEXT"'","vote":'$VOTE'}' -H "Content-Type: application/json" -X POST http://localhost:7070/api/vote
 echo ""
 

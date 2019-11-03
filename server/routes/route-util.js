@@ -50,6 +50,12 @@ const sortNewsItemsByLabels = async function(newsItems) {
   const newsItemPriorityMap = { "2": [], "1": [], "0": [] };
 
   for (const newsItemLabelled of newsItemsLabelled) {
+    if (newsItemLabelled.vote === 0) {
+      newsItemLabelled.voteStr = "low";
+    } else if (newsItemLabelled.vote === 2) {
+      newsItemLabelled.voteStr = "high";
+    }
+
     newsItemPriorityMap[newsItemLabelled.vote + ""].push(newsItemLabelled);
   }
 

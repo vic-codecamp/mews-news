@@ -9,7 +9,7 @@ const passport = require("passport");
 const flash = require("connect-flash");
 const path = require("path");
 
-const { middlewareSetMimeTypeTextHtml } = require("./middleware");
+const { middlewareSetMimeTypeTextHtml, middlewareSetMimeTypeJson } = require("./middleware");
 const auth = require("./auth");
 const { getLatestNewsItems, getLoggableRenderData, saveUserAction } = require("./route-util");
 
@@ -141,6 +141,22 @@ class MewsHttpServer {
 
         console.log(getLoggableRenderData(req.renderData));
         res.render("index", { ...req.renderData });
+      })
+    );
+
+    server.post(
+      "/api/action",
+      middlewareSetMimeTypeJson,
+      // middlewareStats,
+      wrap(async function(req, res) {
+        if (req.user) {
+          await saveUserAction(db, req.body.newsItemId, req.body.action, req.user.username);
+
+          res.sendStatus(200);
+          return;
+        }
+
+        res.sendStatus(401);
       })
     );
 

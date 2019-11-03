@@ -15,12 +15,17 @@ Before starting mews-news, make sure that you copy `.env.dist` to `.env` and fil
 
 ## machine learning
 
-### mock server
+### server
 
 ```bash
 cd content
-pip3 install flask
-./server.py
+python3 -m pip install --user --upgrade pip
+python3 -m pip install --user virtualenv
+# python3 -m venv mews-news
+source mews-news/bin/activate
+
+pip install flask pandas wheel sklearn
+python ./server.py
 ```
 
 endpoints samples:

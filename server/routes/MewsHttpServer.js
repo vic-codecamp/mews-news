@@ -26,7 +26,7 @@ const wrap = fn =>
   };
 
 class MewsHttpServer {
-  constructor(ic, db) {
+  constructor(ic, db, textClassificationService) {
     ic.logger.info("Mews server running in " + ic.env);
 
     const lastUpdated = moment.unix(ic.lastUpdated).fromNow();
@@ -111,7 +111,7 @@ class MewsHttpServer {
           req.flash("error", "");
         }
 
-        req.renderData.newsItems = await getLatestNewsItems(db, req.renderData.username);
+        req.renderData.newsItems = await getLatestNewsItems(db, req.renderData.username, textClassificationService);
 
         console.log(getLoggableRenderData(req.renderData));
         res.render("index", { ...req.renderData });
@@ -129,7 +129,7 @@ class MewsHttpServer {
         // console.log(req.body);
 
         if (req.renderData.username) {
-          await saveUserAction(db, req.body.newsItemId, req.body.action, req.renderData.username);
+          await saveUserAction(db, req.body.newsItemId, req.body.action, req.renderData.username, textClassificationService);
 
           // TODO: cycle through funny messages as an easter egg
           req.renderData.notification = { message: "Every vote counts!", type: "success" };
@@ -137,7 +137,7 @@ class MewsHttpServer {
           req.renderData.notification = { message: "You must be logged in to perform this action!", type: "error" };
         }
 
-        req.renderData.newsItems = await getLatestNewsItems(db, req.renderData.username);
+        req.renderData.newsItems = await getLatestNewsItems(db, req.renderData.username, textClassificationService);
 
         console.log(getLoggableRenderData(req.renderData));
         res.render("index", { ...req.renderData });
@@ -150,7 +150,7 @@ class MewsHttpServer {
       // middlewareStats,
       wrap(async function(req, res) {
         if (req.user) {
-          await saveUserAction(db, req.body.newsItemId, req.body.action, req.user.username);
+          await saveUserAction(db, req.body.newsItemId, req.body.action, req.user.username, textClassificationService);
 
           res.sendStatus(200);
           return;

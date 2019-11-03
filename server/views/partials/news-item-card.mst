@@ -1,5 +1,6 @@
 {{#title}}
 <div class="columns is-mobile">
+  <!--
   <form id="form-{{ _id }}-up-vote" method="post" action="/">
     <input type="hidden" name="action" value="2" />
     <input type="hidden" name="newsItemId" value="{{ _id }}" />
@@ -16,20 +17,21 @@
     <input type="hidden" name="action" value="1" />
     <input type="hidden" name="newsItemId" value="{{ _id }}" />
   </form>
+  -->
 
   <div class="column is-6-desktop is-offset-3-desktop is-8-tablet is-offset-2-tablet">
     <div class="card">
       {{#username}}
-      <header class="card-header" newsid="{{ _id }}" >
+      <header class="card-header" newsItemId="{{ _id }}">
         {{^voteUp}}
-        <a href="#" class="card-header-icon upvote-action" aria-label="upvote" >
+        <a href="#" class="card-header-icon upvote-action" aria-label="upvote">
           <span class="icon">
             <i class="far fa-thumbs-up" aria-hidden="true"></i>
           </span>
         </a>
         {{/voteUp}}
         {{#voteUp}}
-        <a href="#" class="card-header-icon upvote-action voted" aria-label="upvote" >
+        <a href="#" class="card-header-icon upvote-action voted" aria-label="upvote">
           <span class="icon">
             <i class="fas fa-thumbs-up" aria-hidden="true"></i>
           </span>
@@ -41,18 +43,14 @@
           _{{ vote }}_
         </p>
         {{^voteDown}}
-        <a href="#" class="card-header-icon downvote-action  aria-label="downvote">
+        <a href="#" class="card-header-icon downvote-action" aria-label="downvote">
           <span class="icon">
             <i class="far fa-thumbs-down" aria-hidden="true"></i>
           </span>
         </a>
         {{/voteDown}}
         {{#voteDown}}
-        <a
-          href="#"
-          class="card-header-icon downvote-action voted"
-          aria-label="downvote"
-        >
+        <a href="#" class="card-header-icon downvote-action voted" aria-label="downvote">
           <span class="icon">
             <i class="fas fa-thumbs-down" aria-hidden="true"></i>
           </span>

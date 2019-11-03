@@ -40,7 +40,8 @@
         <p class="card-header-title">
           <!-- {{ publishedAt }} -->
           <!-- {{ action }} -->
-          _{{ vote }}_
+          <!-- _{{ vote }}_ -->
+          {{ voteStr }}
         </p>
         {{^voteDown}}
         <a href="#" class="card-header-icon downvote-action" aria-label="downvote">

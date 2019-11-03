@@ -45,7 +45,7 @@ const sortNewsItemsByLabels = async function(newsItems) {
   const response = await axios.post("http://localhost:7070/api/votes", newsItems);
   const newsItemsLabelled = response.data; // should be ordered
 
-  console.log(newsItemsLabelled);
+  // console.log(newsItemsLabelled);
 
   const newsItemPriorityMap = { "2": [], "1": [], "0": [] };
 
@@ -81,7 +81,10 @@ const saveUserAction = async function(db, newsItemId, action, username) {
   await db.actionRemoveByNewsItemId(_id);
   await db.actionAdd(actionObj);
 
-  await axios.post("http://localhost:7070/api/vote", { username, title, vote: action });
+  const voteObj = { username, title, vote: action };
+  // console.log(voteObj);
+  const response = await axios.post("http://localhost:7070/api/vote", voteObj);
+  // console.log(response.data);
 };
 
 module.exports = {

@@ -128,6 +128,7 @@ class NewsTittleClassifier:
 
         self.clf.partial_fit(X_train_tfidf,[vote])
         self.__dump_model()
+        print([title, vote])
         return True
 
 

@@ -126,7 +126,7 @@ class MewsHttpServer {
       middlewareSetMimeTypeTextHtml,
       // middlewareStats,
       wrap(async function(req, res) {
-        console.log(req.body);
+        // console.log(req.body);
 
         if (req.renderData.username) {
           await saveUserAction(db, req.body.newsItemId, req.body.action, req.renderData.username);

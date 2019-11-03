@@ -11,7 +11,7 @@ const path = require("path");
 
 const { middlewareSetMimeTypeTextHtml } = require("./middleware");
 const auth = require("./auth");
-const { getLatestNewsItems, getLoggableRenderData } = require("./route-util");
+const { getLatestNewsItems, getLoggableRenderData, saveUserAction } = require("./route-util");
 
 /*
 const linkSchema = require("../schemas/link");
@@ -128,22 +128,8 @@ class MewsHttpServer {
       wrap(async function(req, res) {
         console.log(req.body);
 
-        // TODO: save user action
         if (req.renderData.username) {
-          const { _id, url, title, description } = await db.newsItemGetById(req.body.newsItemId);
-
-          const actionObj = {
-            userId: req.renderData.username,
-            newsItemId: _id,
-            url,
-            title,
-            description,
-            action: req.body.action,
-            when: moment().unix()
-          };
-
-          await db.actionRemoveByNewsItemId(_id);
-          await db.actionAdd(actionObj);
+          await saveUserAction(db, req.body.newsItemId, req.body.action, req.renderData.username);
 
           // TODO: cycle through funny messages as an easter egg
           req.renderData.notification = { message: "Every vote counts!", type: "success" };

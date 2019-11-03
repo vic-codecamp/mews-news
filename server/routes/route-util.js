@@ -14,7 +14,13 @@ const getLatestNewsItems = async function(db, username) {
     return newsItems;
   }
 
-  // update newsItems with user input
+  await enhanceNewsItemsWithUserInput(db, newsItems, username);
+  const newsItemsSorted = await sortNewsItemsByLabels(newsItems);
+
+  return newsItemsSorted;
+};
+
+const enhanceNewsItemsWithUserInput = async function(db, newsItems, username) {
   const userActions = await db.actionsGetByUserId(username);
   const userActionMap = {};
 
@@ -33,13 +39,13 @@ const getLatestNewsItems = async function(db, username) {
       }
     }
   }
+};
 
-  //
-  // sort newsItems by priority
-  //
-
+const sortNewsItemsByLabels = async function(newsItems) {
   const response = await axios.post("http://localhost:7070/api/votes", newsItems);
   const newsItemsLabelled = response.data; // should be ordered
+
+  console.log(newsItemsLabelled);
 
   const newsItemPriorityMap = { "2": [], "1": [], "0": [] };
 
@@ -59,7 +65,27 @@ const getLoggableRenderData = function(renderData) {
   return { ...renderData, newsItemsCount: renderData.newsItems ? renderData.newsItems.length : -1, newsItems: null };
 };
 
+const saveUserAction = async function(db, newsItemId, action, username) {
+  const { _id, url, title, description } = await db.newsItemGetById(newsItemId);
+
+  const actionObj = {
+    userId: username,
+    newsItemId: _id,
+    url,
+    title,
+    description,
+    action,
+    when: moment().unix()
+  };
+
+  await db.actionRemoveByNewsItemId(_id);
+  await db.actionAdd(actionObj);
+
+  await axios.post("http://localhost:7070/api/vote", { username, title, vote: action });
+};
+
 module.exports = {
   getLatestNewsItems,
-  getLoggableRenderData
+  getLoggableRenderData,
+  saveUserAction
 };

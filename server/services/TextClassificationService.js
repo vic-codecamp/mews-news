@@ -10,6 +10,9 @@ module.exports = class TextClassificationService {
 
   addDocument(title, label) {
     this.classifier.addDocument(title, label);
+  }
+
+  train() {
     this.classifier.train();
   }
 

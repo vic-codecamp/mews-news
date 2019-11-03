@@ -56,6 +56,10 @@ async function sortNewsItemsByLabels(newsItems, textClassificationService) {
   const newsItemPriorityMap = { "2": [], "1": [], "0": [] };
 
   for (const newsItemLabelled of newsItemsLabelled) {
+    if (newsItemLabelled.vote === "") {
+      newsItemLabelled.vote = "1";
+    }
+
     if (newsItemLabelled.vote + "" === "0") {
       newsItemLabelled.voteStr = "low";
     } else if (newsItemLabelled.vote + "" === "2") {

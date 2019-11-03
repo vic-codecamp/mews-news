@@ -8,7 +8,6 @@
   <link rel="stylesheet" type="text/css" href="/css/noty.css" />
   <!--<link rel="stylesheet" type="text/css" href="/css/noty-themes/semanticui.css" />-->
   <link rel="stylesheet" type="text/css" href="/css/noty-themes/bulma.css" />
-
   <link rel="stylesheet" type="text/css" href="/css-app/mews-news.css" />
 
   <script type="text/javascript" src="/js/jquery-3.4.1.min.js"></script>
@@ -41,6 +40,66 @@
         localStorage.removeItem("scrollY");
       }
     });
+  </script>
+
+
+  <script>
+      $(document).ready(function() {
+      function sendvote(vote,id){
+            if (vote=="up"){
+                console.log("UP")
+
+            }else if (vote=="down"){
+                console.log("DOWN")
+            }else{
+                console.log("NEUTRAL")
+            }
+          console.log(id)
+      }
+
+
+        $(".upvote-action").click(
+            function () {
+                var btn = $(this);
+                var parent = btn.parent();
+                var newsid = parent.attr("newsid");
+
+                if (btn.hasClass("voted")){
+                    sendvote("neutral",newsid);
+                    btn.find("i").removeClass("fas").addClass("far");
+                }else{
+                    sendvote("up",newsid);
+                    btn.find("i").removeClass("far").addClass("fas");
+                }
+                btn.toggleClass("voted");
+
+                parent.find("i.fa-thumbs-down").removeClass("fas").addClass("far");
+                parent.find(".downvote-action").removeClass("voted");
+
+
+            }
+        );
+
+        $(".downvote-action").click(
+            function () {
+                var btn = $(this);
+                var parent = btn.parent();
+                var newsid = parent.attr("newsid");
+
+                if (btn.hasClass("voted")){
+                  sendvote("neutral",newsid);
+                    btn.find("i").removeClass("fas").addClass("far");
+
+                }else{
+                  sendvote("down",newsid);
+                    btn.find("i").removeClass("far").addClass("fas");
+                }
+                btn.toggleClass("voted");
+                parent.find("i.fa-thumbs-up").removeClass("fas").addClass("far");
+                parent.find(".upvote-action").removeClass("voted");
+            }
+        );
+      });
   </script>
 
   {{#notification}}
